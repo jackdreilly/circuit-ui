@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ql/flags.dart';
 
 import 'constants.dart';
 import 'flagsWidget.dart';
@@ -8,6 +9,20 @@ import 'registerWidget.dart';
 import 'registersWidget.dart';
 import 'simulationState.dart';
 import 'stepperWidget.dart';
+
+class EnabledWidget extends StatelessWidget {
+  final Iterable<String> tags;
+  final String title;
+
+  const EnabledWidget({Key key, this.tags, this.title}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FlagsWidget(
+        title: title,
+        flags: Flags(Map.fromEntries(tags.map((t) => MapEntry(t, true)))));
+  }
+}
 
 class Simulation extends StatelessWidget {
   final SimulationState state;
@@ -39,8 +54,11 @@ class Simulation extends StatelessWidget {
       RegisterWidget(value: state.output),
     ]);
     var flags = FlagsWidget(
+      title: "ALU Flags",
       flags: state.flags,
     );
+    var enablers = EnabledWidget(title: "Enablers", tags: state.enablers);
+    var selectors = EnabledWidget(title: "Selectors", tags: state.selectors);
     var stepper = StepperWidget(
       step: state.steps.step,
     );
@@ -62,7 +80,14 @@ class Simulation extends StatelessWidget {
           stepper,
           bus,
           ir,
-          flags,
+          Row(
+            children: <Widget>[flags, enablers, selectors]
+                .map((t) => Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: t,
+                    ))
+                .toList(),
+          ),
           registers,
           input,
           output,

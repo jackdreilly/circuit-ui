@@ -1,7 +1,11 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:math';
 
-import 'cpuPage.dart';
-import 'infoWidget.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:ql/controls.dart';
+import 'package:ql/cpuPage.dart';
+import 'package:ql/infoWidget.dart';
 
 void main() => runApp(MyApp());
 
@@ -22,7 +26,11 @@ class MyApp extends StatelessWidget {
               Padding(padding: EdgeInsets.only(left: 20), child: InfoWidget()),
             ]),
           ),
-          body: CpuPage(),
+          body: ChangeNotifierProvider<Controller>(
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: CpuPage(),
+              ), builder: (c) => Controller(c)),
         ));
   }
 }

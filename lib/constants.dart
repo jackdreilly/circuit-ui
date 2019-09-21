@@ -25,7 +25,8 @@ JMP  22  ; # END LOOP(Loc 22)
 final double padding = 5;
 
 final int nSteps = 6;
-final String socketAddress = 'https://koutavi.appspot.com/test';
-final String parseAddress = 'https://koutavi.appspot.com/parse';
+final String baseUrl = "https://circuit-p37cqwbefa-uc.a.run.app";
+final String socketAddress = '$baseUrl/test';
+final String parseAddress = '$baseUrl/parse';
 // final String socketAddress = 'http://localhost:5000/test';
 // final String parseAddress = 'http://localhost:5000/parse';

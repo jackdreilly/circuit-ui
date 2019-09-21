@@ -7,18 +7,23 @@ import 'flags.dart';
 class FlagsWidget extends StatelessWidget {
   final Flags flags;
 
-  const FlagsWidget({Key key, this.flags}) : super(key: key);
+  final String title;
+
+  const FlagsWidget({Key key, this.title, this.flags}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text("Flags"),
+        Text(title),
         Row(
             children: Collection(flags.values.keys.toList())
                 .orderBy((s) => s)
                 .asIterable()
-                .map((f) => FlagWidget(name: f, value: flags.values[f]))
+                .map((f) => Padding(
+                      padding: const EdgeInsets.only(right: 4.0),
+                      child: FlagWidget(name: f, value: flags.values[f]),
+                    ))
                 .toList())
       ],
     );

@@ -1,0 +1,105 @@
+Flutter crash report; please file at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter run -d chrome
+
+## exception
+
+ChromeDebugException: Unexpected error from chrome devtools:
+text: Uncaught
+exception:
+  description: ReferenceError: require is not defined
+    at <anonymous>:1:1
+  type: object
+  value: null
+attempted JS eval: `require('dart_sdk').dart.getLibraries();`
+
+
+```
+#0      handleErrorIfPresent (package:dwds/src/services/chrome_proxy_service.dart:569:5)
+#1      AppInspector._getLibraryRefs (package:dwds/src/debugging/inspector.dart:489:5)
+<asynchronous suspension>
+#2      AppInspector._initialize (package:dwds/src/debugging/inspector.dart:72:36)
+<asynchronous suspension>
+#3      AppInspector.initialize (package:dwds/src/debugging/inspector.dart:108:21)
+#4      _AsyncAwaitCompleter.start (dart:async-patch/async_patch.dart:43:6)
+#5      AppInspector.initialize (package:dwds/src/debugging/inspector.dart:84:41)
+#6      ChromeProxyService.createIsolate (package:dwds/src/services/chrome_proxy_service.dart:112:37)
+#7      _AsyncAwaitCompleter.start (dart:async-patch/async_patch.dart:43:6)
+#8      ChromeProxyService.createIsolate (package:dwds/src/services/chrome_proxy_service.dart:106:29)
+#9      DevHandler._handleConnection.<anonymous closure> (package:dwds/src/handlers/dev_handler.dart:265:17)
+#10     _asyncThenWrapperHelper.<anonymous closure> (dart:async-patch/async_patch.dart:71:64)
+#11     _rootRunUnary (dart:async/zone.dart:1132:38)
+#12     _CustomZone.runUnary (dart:async/zone.dart:1029:19)
+#13     _FutureListener.handleValue (dart:async/future_impl.dart:137:18)
+#14     Future._propagateToListeners.handleValueCallback (dart:async/future_impl.dart:678:45)
+#15     Future._propagateToListeners (dart:async/future_impl.dart:707:32)
+#16     Future._addListener.<anonymous closure> (dart:async/future_impl.dart:387:9)
+#17     _rootRun (dart:async/zone.dart:1124:13)
+#18     _CustomZone.run (dart:async/zone.dart:1021:19)
+#19     _CustomZone.runGuarded (dart:async/zone.dart:923:7)
+#20     _CustomZone.bindCallbackGuarded.<anonymous closure> (dart:async/zone.dart:963:23)
+#21     _microtaskLoop (dart:async/schedule_microtask.dart:41:21)
+#22     _startMicrotaskLoop (dart:async/schedule_microtask.dart:50:5)
+#23     _runPendingImmediateCallback (dart:isolate-patch/isolate_patch.dart:116:13)
+#24     _RawReceivePortImpl._handleMessage (dart:isolate-patch/isolate_patch.dart:173:5)
+```
+
+## flutter doctor
+
+```
+[32m[✓][39m Flutter (Channel dev, v1.10.5, on Mac OS X 10.14.6 18G87, locale en-US)
+    [32m•[39m Flutter version 1.10.5 at /Users/jdrblu/Downloads/flutter10
+    [32m•[39m Framework revision 3cf88fed6d (2 days ago), 2019-09-18 23:09:41 -0400
+    [32m•[39m Engine revision 33ad6757e8
+    [32m•[39m Dart version 2.6.0 (build 2.6.0-dev.0.0 cb80ea7ba9)
+
+[32m[✓][39m Android toolchain - develop for Android devices (Android SDK version 29.0.2)
+    [32m•[39m Android SDK at /Users/jdrblu/Library/Android/sdk
+    [32m•[39m Android NDK location not configured (optional; useful for native profiling support)
+    [32m•[39m Platform android-29, build-tools 29.0.2
+    [32m•[39m Java binary at: /Applications/Android Studio.app/Contents/jre/jdk/Contents/Home/bin/java
+    [32m•[39m Java version OpenJDK Runtime Environment (build 1.8.0_202-release-1483-b49-5587405)
+    [32m•[39m All Android licenses accepted.
+
+[33m[!][39m Xcode - develop for iOS and macOS
+    [31m✗[39m Xcode installation is incomplete; a full installation is necessary for iOS development.
+      Download at: https://developer.apple.com/xcode/download/
+      Or install Xcode via the App Store.
+      Once installed, run:
+        sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+    [31m✗[39m CocoaPods installed but not initialized.
+        CocoaPods is used to retrieve the iOS and macOS platform side's plugin code that responds to your plugin usage on the Dart side.
+        Without CocoaPods, plugins will not work on iOS or macOS.
+        For more info, see https://flutter.dev/platform-plugins
+      To initialize CocoaPods, run:
+        pod setup
+      once to finalize CocoaPods' installation.
+
+[32m[✓][39m Chrome - develop for the web
+    [32m•[39m Chrome at /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+
+[33m[!][39m Android Studio (version 3.5)
+    [32m•[39m Android Studio at /Applications/Android Studio.app/Contents
+    [31m✗[39m Flutter plugin not installed; this adds Flutter specific functionality.
+    [31m✗[39m Dart plugin not installed; this adds Dart specific functionality.
+    [32m•[39m Java version OpenJDK Runtime Environment (build 1.8.0_202-release-1483-b49-5587405)
+
+[33m[!][39m IntelliJ IDEA Community Edition (version 2018.3.1)
+    [32m•[39m IntelliJ at /Applications/IntelliJ IDEA CE.app
+    [31m✗[39m Flutter plugin not installed; this adds Flutter specific functionality.
+    [31m✗[39m Dart plugin not installed; this adds Dart specific functionality.
+    [32m•[39m For information about installing plugins, see
+      https://flutter.dev/intellij-setup/#installing-the-plugins
+
+[32m[✓][39m VS Code (version 1.38.1)
+    [32m•[39m VS Code at /Applications/Visual Studio Code.app/Contents
+    [32m•[39m Flutter extension version 3.4.1
+
+[32m[✓][39m Connected device (2 available)
+    [32m•[39m Chrome • chrome • web-javascript • Google Chrome 76.0.3809.132
+    [32m•[39m Server • web    • web-javascript • Flutter Tools
+
+[33m![39m Doctor found issues in 3 categories.
+```

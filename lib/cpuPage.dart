@@ -1,84 +1,39 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:socket_io_client/socket_io_client.dart' as socket_io;
+import 'package:provider/provider.dart';
+import 'package:ql/compilerWidget.dart';
+import 'package:ql/controls.dart';
+import 'package:ql/simulation.dart' as sim;
+import 'package:ql/simulationState.dart';
 
-import 'compilerWidget.dart';
-import 'constants.dart';
-import 'simulation.dart' as sim;
-import 'simulationState.dart';
-
-class CpuPage extends StatefulWidget {
-  final String title;
-
-  CpuPage({Key key, this.title}) : super(key: key);
-
+class CpuPage extends StatelessWidget {
   @override
-  State<StatefulWidget> createState() {
-    return CpuPageState();
-  }
-}
-
-class CpuPageState extends State<CpuPage> {
-  socket_io.Socket socket;
-
-  SimulationState state;
-
-  bool beefy = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  void onRun(String program) {
-    Scaffold.of(context)
-        .showSnackBar(SnackBar(content: Text('Loading Program')));
-    state = null;
-    if (socket != null) {
-      socket.disconnect();
-    }
-    socket = socket_io.io(socketAddress);
-    socket.on('connect', (data) {
-      socket.emit('json', json.encode({"program": program, "beefy": beefy}));
-    });
-    socket.on('json', (data) {
-      Scaffold.of(context).hideCurrentSnackBar();
-      state = SimulationState.fromJson(data);
-      setState(() {});
-    });
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final compiler = CompilerWidget(onRun: onRun);
-    final simulation = socket == null
-        ? Column(children: [
-            Text("Click Run To Start Simulation"),
-            sim.Simulation.empty()
-          ])
-        : sim.Simulation(state: state);
-    final beefySwitch = Padding(
-        padding: EdgeInsets.all(5),
-        child: Column(
-          children: <Widget>[
-            Text("Beefy Mode"),
-            Switch(
-              value: beefy,
-              onChanged: (v) {
-                setState(() {
-                  beefy = v;
-                });
-              },
-            ),
-          ],
-        ));
-    return Padding(
-        padding: EdgeInsets.all(10),
-        child: Row(children: [
-          Column(children: [simulation, beefySwitch]),
-          compiler,
-        ]));
-  }
+  Widget build(BuildContext context) => Consumer<Controller>(
+      builder: (a, b, c) => StreamBuilder<SimulationState>(
+          stream: b.simulations,
+          initialData: SimulationState.empty(),
+          builder: (c, d) {
+            final controls = Controls();
+            final simulation = sim.Simulation(state: d.data);
+            final compiler = CompilerWidget();
+            final top = controls;
+            final bottom = Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[simulation, compiler],
+                    ),
+                  ),
+                ),
+                margin: EdgeInsets.all(10));
+            return SingleChildScrollView(
+                child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[top, bottom],
+            ));
+          }));
 }
