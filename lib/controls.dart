@@ -176,6 +176,7 @@ class Controller with ChangeNotifier {
   final compiledController = StreamController<String>();
   final programController = StreamController<String>();
   final scrubberDataController = StreamController<ScrubberData>();
+  final loadingController = StreamController<bool>();
 
   final BuildContext context;
 
@@ -197,6 +198,8 @@ class Controller with ChangeNotifier {
 
   Socket socket;
 
+  Stream<bool> _loadingValue;
+
   Stream<bool> get beefy =>
       _beefyValue ??= beefyController.stream.asBroadcastStream();
   Sink<ActionType> get actionType => actionTypeController.sink;
@@ -206,6 +209,8 @@ class Controller with ChangeNotifier {
       _compiled ??= compiledController.stream.asBroadcastStream();
   Stream<ScrubberData> get scrubberData =>
       _scrubberDataValue ??= scrubberDataController.stream.asBroadcastStream();
+  Stream<bool> get loading =>
+      _loadingValue ??= loadingController.stream.asBroadcastStream();
 
   Controller(this.context) : super() {
     actionTypeController.stream.listen(actionTypeCame);
@@ -228,10 +233,12 @@ class Controller with ChangeNotifier {
   void compile() async {
     Scaffold.of(context)
         .showSnackBar(SnackBar(content: Text('Compiling program')));
+    loadingController.add(true);
     final response = await BrowserClient().post(parseAddress,
         headers: {"Content-Type": "application/json"},
         body: json.encode({"program": _program}));
     Scaffold.of(context).hideCurrentSnackBar();
+    loadingController.add(false);
     final result = RamData.fromJson({"data": json.decode(response.body)});
     final compiledText = result.data.map((f) => f.join()).join("\n");
     compiledController.add(compiledText);
@@ -319,6 +326,7 @@ class Controller with ChangeNotifier {
   }
 
   void reset() {
+    resetLoading();
     timer?.cancel();
     _paused = false;
     socket?.disconnect();
@@ -343,9 +351,15 @@ class Controller with ChangeNotifier {
     addCurrentSim();
   }
 
+  void resetLoading() {
+    loadingController.add(false);
+    Scaffold.of(context).hideCurrentSnackBar();
+  }
+
   void build() {
-    Scaffold.of(context)
-        .showSnackBar(SnackBar(content: Text('Building Simulation')));
+    Scaffold.of(context).showSnackBar(SnackBar(
+        duration: Duration(seconds: 20), content: Text('Building Simulation')));
+    loadingController.add(true);
     socket?.disconnect();
     socket = io(socketAddress);
     socket.on('connect', (data) {
@@ -353,7 +367,9 @@ class Controller with ChangeNotifier {
       play();
     });
     socket.on('json', (data) {
-      Scaffold.of(context).hideCurrentSnackBar();
+      if (_history.isEmpty) {
+        resetLoading();
+      }
       final states =
           List.of(data).map((d) => SimulationState.fromJson(d)).toList();
       _history.addAll(states);
